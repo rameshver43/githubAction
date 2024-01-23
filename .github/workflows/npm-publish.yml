@@ -38,11 +38,11 @@ jobs:
           $timestamp = (Get-Date).ToString("yyyyMMddHHmmss")
           $backupFolder = "${backupPath}_backup_$timestamp"
           mkdir $backupFolder
-          Move-Item -Path $previousBuildPath -Destination $backupFolder -Force
-          Write-Host "Previous build backed up to $backupFolder"
+          Copy-Item -Path $previousBuildPath\* -Destination $backupFolder -Recurse -Force
+          Write-Host "Previous build copied to $backupFolder"
 
       - name: Copy build artifacts to server path
-        run: Copy-Item -Path .\build\* -Destination $previousBuildPath -Recurse
+        run: Copy-Item -Path .\build\* -Destination $previousBuildPath -Recurse -Force
 
       - name: Display build path
         run: Write-Host "Build artifacts copied to $previousBuildPath"
