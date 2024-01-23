@@ -1,0 +1,40 @@
+name: Build, Backup, and Deploy on Release
+
+on:
+  release:
+    types:
+      - created
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the React app
+        run: npm run build
+
+      - name: Create backup of previous build
+        run: |
+          $previousBuildPath = "D:\Task\Live\build"
+          $backupPath = "D:\Task\Backup\build"
+          $timestamp = (Get-Date).ToString("yyyyMMddHHmmss")
+          $backupFolder = "${backupPath}_backup_$timestamp"
+          mkdir backFolder
+          Move-Item -Path $previousBuildPath -Destination $backupFolder -Force
+          Write-Host "Previous build backed up to $backupFolder"
+
+      - name: Copy build artifacts to server path
+        run: Copy-Item -Path .\build\* -Destination  $previousBuildPath -Recurse
+
+      - name: Display build path
+        run: Write-Host "Build artifacts copied to $previousBuildPath "
