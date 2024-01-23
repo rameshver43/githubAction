@@ -25,11 +25,11 @@ jobs:
 
       - name: Create backup of previous build
         run: |
-          $previousBuildPath = "D:\Task\Live\build"
-          $backupPath = "D:\Task\Backup\build"
+          $previousBuildPath = "D:\\Task\\Live\\build"
+          $backupPath = "D:\\Task\\Backup\\build"
           $timestamp = (Get-Date).ToString("yyyyMMddHHmmss")
           $backupFolder = "${backupPath}_backup_$timestamp"
-          mkdir backFolder
+          mkdir $backupFolder
           Move-Item -Path $previousBuildPath -Destination $backupFolder -Force
           Write-Host "Previous build backed up to $backupFolder"
 
