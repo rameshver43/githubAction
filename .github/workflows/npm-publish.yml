@@ -24,4 +24,25 @@ jobs:
       - name: Build the React app
         run: npm run build
 
-     
+      - name: Create backup of previous build
+        run: |
+          $previousBuildPath = "D:\\Task\\Live\\build"
+          $backupPath = "D:\\Task\\Backup\\build"
+
+          # Check if the source directory exists; if not, create it
+          if (-not (Test-Path -Path $previousBuildPath -PathType Container)) {
+              mkdir $previousBuildPath -Force
+              Write-Host "Source directory created: $previousBuildPath"
+          }
+
+          $timestamp = (Get-Date).ToString("yyyyMMddHHmmss")
+          $backupFolder = "${backupPath}_backup_$timestamp"
+          mkdir $backupFolder
+          Copy-Item -Path $previousBuildPath\* -Destination $backupFolder -Recurse -Force
+          Write-Host "Previous build copied to $backupFolder"
+
+      - name: Copy build artifacts to server path
+        run: Copy-Item -Path .\build\* -Destination $previousBuildPath -Recurse -Force
+
+      - name: Display build path
+        run: Write-Host "Build artifacts copied to $previousBuildPath"
