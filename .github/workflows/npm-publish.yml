@@ -4,6 +4,7 @@ on:
   release:
     types:
       - created
+
 jobs:
   build:
     runs-on: windows-latest
@@ -15,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '14'  # Adjust the Node.js version if needed
 
       - name: Install dependencies
         run: npm install
@@ -27,6 +28,13 @@ jobs:
         run: |
           $previousBuildPath = "D:\\Task\\Live\\build"
           $backupPath = "D:\\Task\\Backup\\build"
+
+          # Check if the source directory exists; if not, create it
+          if (-not (Test-Path -Path $previousBuildPath -PathType Container)) {
+              mkdir $previousBuildPath -Force
+              Write-Host "Source directory created: $previousBuildPath"
+          }
+
           $timestamp = (Get-Date).ToString("yyyyMMddHHmmss")
           $backupFolder = "${backupPath}_backup_$timestamp"
           mkdir $backupFolder
@@ -34,7 +42,7 @@ jobs:
           Write-Host "Previous build backed up to $backupFolder"
 
       - name: Copy build artifacts to server path
-        run: Copy-Item -Path .\build\* -Destination  $previousBuildPath -Recurse
+        run: Copy-Item -Path .\build\* -Destination $previousBuildPath -Recurse
 
       - name: Display build path
-        run: Write-Host "Build artifacts copied to $previousBuildPath "
+        run: Write-Host "Build artifacts copied to $previousBuildPath"
